@@ -1,3 +1,2 @@
 # Price Comparison Tool
-
-test
+A program that can check current online pricing for a user-input item.
