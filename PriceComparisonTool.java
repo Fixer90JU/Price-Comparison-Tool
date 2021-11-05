@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 //Price Comparison Tool
 public class PriceComparisonTool
@@ -12,6 +15,7 @@ public class PriceComparisonTool
 	static final String INFO_NAME = "Price Comparison Tool";
 	static final String INFO_VERSION = "Version 0.1.0";
 	static final String FILE_NAME = "Comparison.txt";
+	static final int ITEM_COUNT = 15;
 	static final String SEARCH_BUTTON_STRING = "Compare";
 	static final int SORT_1A = 0;
 	static final int SORT_1B = 1;
@@ -23,8 +27,16 @@ public class PriceComparisonTool
 	static final String SORT_2_STRING = "Sort by Store";
 	static final String SORT_2A_STRING = "A-Z";
 	static final String SORT_2B_STRING = "Z-A";
-	static final int ITEM_COUNT = 15;
-	static final String OUTPUT_FORMAT = "%-4s%s\n%-15s%s\n";
+	static final String URL_PREFIX = "https://www.google.com/search?q=";
+	static final String URL_SUFFIX = "&tbm=shop";
+	static final String HTML_PREFIX = "data-sh-gr=\"line\">";
+	static final String HTML_NAME_PREFIX_PREFIX = "<h4 class=\"";
+	static final String HTML_NAME_PREFIX_SUFFIX = "\">";
+	static final String HTML_NAME_SUFFIX = "</h4>";
+	static final String HTML_PRICE_PREFIX = "\">$";
+	static final String HTML_PRICE_SUFFIX = "</span></span>";
+	static final String HTML_STORE_PREFIX = "Visit site of ";
+	static final String HTML_STORE_SUFFIX = " in a new window";
 	
 	//Function for displaying the program's information
 	static void displayInformation()
@@ -56,7 +68,53 @@ public class PriceComparisonTool
 	//Function for getting the items from online stores
 	static void getItems(Item[] items, String search)
 	{
+		//Formats the URL
+		search = search.replaceAll("[^a-zA-Z0-9\\s]", "");
+		search = search.replace(' ', '+');
+		search = URL_PREFIX + search + URL_SUFFIX;
 		
+		//Gets the HTML page as a string from the URL
+		try
+		{
+			final Document DOCUMENT = Jsoup.connect(search).get();
+			search = DOCUMENT.outerHtml();
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		
+		//Gets the item name prefix from the HTML string
+		int pos = search.indexOf(HTML_PREFIX) + HTML_PREFIX.length();
+		pos = search.indexOf(HTML_NAME_PREFIX_PREFIX, pos);
+		final String HTML_NAME_PREFIX = search.substring(pos,
+			search.indexOf(HTML_NAME_PREFIX_SUFFIX, pos))
+			+ HTML_NAME_PREFIX_SUFFIX;
+		pos += HTML_NAME_PREFIX.length();
+		
+		//Extracts the data of each item from the HTML string
+		for(int i = 0; i < ITEM_COUNT; i++)
+		{
+			//Gets an item's name
+			items[i].name = search.substring(pos,
+				search.indexOf(HTML_NAME_SUFFIX, pos));
+			
+			//Gets an item's price
+			pos = search.indexOf(HTML_PRICE_PREFIX, pos)
+				+ HTML_PRICE_PREFIX.length();
+			items[i].price = '$' + search.substring(pos,
+				search.indexOf(HTML_PRICE_SUFFIX, pos));
+			
+			//Gets an item's store
+			pos = search.indexOf(HTML_STORE_PREFIX, pos)
+				+ HTML_STORE_PREFIX.length();
+			items[i].store = search.substring(pos,
+				search.indexOf(HTML_STORE_SUFFIX, pos));
+			
+			//Sets the position for the next item
+			pos = search.indexOf(HTML_NAME_PREFIX, pos)
+				+ HTML_NAME_PREFIX.length();
+		}
 	}
 	
 	//Function for sorting the items based on the sorting type
@@ -66,44 +124,6 @@ public class PriceComparisonTool
 		sorter.sort(items, 0, ITEM_COUNT - 1);
 	}
 	
-	//Funtion for formatting the price to a string (USD)
-	static String formatPrice(int price)
-	{
-		//Adds dot for cents
-		String priceString = Integer.toString(price);
-		switch(priceString.length())
-		{
-			case 1:
-				priceString = "0.0" + priceString;
-				break;
-			case 2:
-				priceString = "0." + priceString;
-				break;
-			default:
-				priceString = priceString.substring(0,
-					priceString.length() - 2) + '.'
-					+ priceString.substring(priceString.length() - 2);
-				break;
-		}
-		
-		//Adds commas
-		int commaCount = 0;
-		for(int i = priceString.length() - 3; i > 3; i -= 3)
-		{
-			int commaPosition = priceString.length() - (3 * commaCount)
-				- commaCount - 6;
-			priceString = priceString.substring(0, commaPosition) + ','
-				+ priceString.substring(commaPosition);
-			commaCount++;
-		}
-		
-		//Adds dollar sign
-		priceString = '$' + priceString;
-		
-		//Returns formatted string
-		return priceString;
-	}
-	
 	//Function for outputting the items
 	static void outputItems(Item[] items) throws IOException
 	{
@@ -111,14 +131,20 @@ public class PriceComparisonTool
 		for(int i = 0; i < ITEM_COUNT; i++)
 		{
 			//Outputs the items to the text file
-			writer.printf(OUTPUT_FORMAT + '\n', Integer.toString(i + 1) + '.',
-				items[i].name, formatPrice(items[i].price), items[i].store);
+			writer.printf("%-4s%s\n%-15s%s\n\n", Integer.toString(i + 1) + '.',
+				items[i].name, items[i].price, items[i].store);
 			
 			//Outputs the items to the console
-			System.out.printf('\n' + OUTPUT_FORMAT, Integer.toString(i + 1)
-				+ '.', items[i].name, formatPrice(items[i].price),
-				items[i].store);
+			System.out.printf("\n%-4s%s\n%-15s%s\n", Integer.toString(i + 1) +
+				'.', items[i].name, items[i].price, items[i].store);
 		}
+	}
+	
+	//Function for outputting the elapsed time (in seconds)
+	static void outputTime(long time)
+	{
+		System.out.printf("\nOperation completed in %.3f seconds\n",
+			time / 1000.0);
 	}
 	
 	//Main
@@ -128,6 +154,11 @@ public class PriceComparisonTool
 		String search = "";
 		int sortType = SORT_1A;
 		Item[] items = new Item[ITEM_COUNT];
+		for(int i = 0; i < ITEM_COUNT; i++)
+		{
+			items[i] = new Item();
+		}
+		long time = 0;
 		
 		//Displays the program's information
 		displayInformation();
@@ -138,19 +169,22 @@ public class PriceComparisonTool
 		//Gets the sorting type from the user
 		sortType = getSortType();
 		
-		//Gets the items from online stores
-		//getItems(items, search);
+		//Starts the stopwatch
+		time = System.currentTimeMillis();
 		
-		//TEMPORARY placeholder for getItems
-		for(int i = 0; i < ITEM_COUNT; i++)
-		{
-			items[i] = new Item();
-		}
+		//Gets the items from online stores
+		getItems(items, search);
 		
 		//Sorts the items based on the sorting type
 		sortItems(items, sortType);
 		
 		//Outputs the items
 		outputItems(items);
+		
+		//Stops the stopwatch
+		time = System.currentTimeMillis() - time;
+		
+		//Outputs the elapsed time
+		outputTime(time);
 	}
 }

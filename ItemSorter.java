@@ -37,11 +37,14 @@ public class ItemSorter
 		int i = 0;
 		int j = 0;
 		int k = l;
+		long priceL = 0;
+		long priceR = 0;
 		while(i < sizeL && j < sizeR)
 		{
-			if((sortType == 0 && arrayL[i].price <= arrayR[j].price)
-				|| (sortType == 1 && arrayL[i].price >= arrayR[j].price)
-				|| (sortType == 2
+			priceL = Long.parseLong(arrayL[i].price.replaceAll("[$.]", ""));
+			priceR = Long.parseLong(arrayR[j].price.replaceAll("[$.]", ""));
+			if((sortType == 0 && priceL <= priceR) || (sortType == 1 && priceL
+				>= priceR) || (sortType == 2
 				&& arrayL[i].store.compareToIgnoreCase(arrayR[j].store) <= 0)
 				|| (sortType == 3
 				&& arrayL[i].store.compareToIgnoreCase(arrayR[j].store) >= 0))
