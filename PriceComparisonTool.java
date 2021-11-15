@@ -1,8 +1,6 @@
 //Libraries
 import java.util.Scanner;
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,8 +11,8 @@ public class PriceComparisonTool
 {
 	//Constants
 	static final String INFO_NAME = "Price Comparison Tool";
-	static final String INFO_VERSION = "Version 0.1.0";
-	static final String FILE_NAME = "Comparison.txt";
+	static final String INFO_VERSION = "Version 0.1.1";
+	static final String FILE_NAME = "HTML.txt";
 	static final int ITEM_COUNT = 15;
 	static final String SEARCH_BUTTON_STRING = "Compare";
 	static final int SORT_1A = 0;
@@ -125,15 +123,10 @@ public class PriceComparisonTool
 	}
 	
 	//Function for outputting the items
-	static void outputItems(Item[] items) throws IOException
+	static void outputItems(Item[] items)
 	{
-		PrintWriter writer = new PrintWriter(new FileWriter(FILE_NAME), true);
 		for(int i = 0; i < ITEM_COUNT; i++)
 		{
-			//Outputs the items to the text file
-			writer.printf("%-4s%s\n%-15s%s\n\n", Integer.toString(i + 1) + '.',
-				items[i].name, items[i].price, items[i].store);
-			
 			//Outputs the items to the console
 			System.out.printf("\n%-4s%s\n%-15s%s\n", Integer.toString(i + 1) +
 				'.', items[i].name, items[i].price, items[i].store);
@@ -148,7 +141,7 @@ public class PriceComparisonTool
 	}
 	
 	//Main
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args)
 	{
 		//Variables
 		String search = "";

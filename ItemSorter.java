@@ -41,8 +41,8 @@ public class ItemSorter
 		long priceR = 0;
 		while(i < sizeL && j < sizeR)
 		{
-			priceL = Long.parseLong(arrayL[i].price.replaceAll("[$.]", ""));
-			priceR = Long.parseLong(arrayR[j].price.replaceAll("[$.]", ""));
+			priceL = Long.parseLong(arrayL[i].price.replaceAll("[^0-9]", ""));
+			priceR = Long.parseLong(arrayR[j].price.replaceAll("[^0-9]", ""));
 			if((sortType == 0 && priceL <= priceR) || (sortType == 1 && priceL
 				>= priceR) || (sortType == 2
 				&& arrayL[i].store.compareToIgnoreCase(arrayR[j].store) <= 0)
