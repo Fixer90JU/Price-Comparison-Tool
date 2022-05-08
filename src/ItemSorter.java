@@ -1,10 +1,10 @@
-//Item Sorter
+// Item Sorter
 public class ItemSorter
 {
-	//Sorting type
+	// Sorting type
 	private int sortType;
 	
-	//Constructors
+	// Constructors
 	public ItemSorter()
 	{
 		sortType = 0;
@@ -14,16 +14,16 @@ public class ItemSorter
 		sortType = sortTypeNew;
 	}
 	
-	//Function for merging two arrays
+	// Function for merging two arrays
 	private void merge(Item[] items, int l, int m, int r)
 	{
-		//Variables
+		// Variables
 		int sizeL = m - l + 1;
 		int sizeR = r - m;
 		Item[] arrayL = new Item[sizeL];
 		Item[] arrayR = new Item[sizeR];
 		
-		//Copies the data to the temporary arrays
+		// Copies the data to the temporary arrays
 		for(int i = 0; i < sizeL; i++)
 		{
 			arrayL[i] = items[l + i];
@@ -33,7 +33,7 @@ public class ItemSorter
 			arrayR[i] = items[m + i + 1];
 		}
 		
-		//Merges the temporary arrays
+		// Merges the temporary arrays
 		int i = 0;
 		int j = 0;
 		int k = l;
@@ -60,7 +60,7 @@ public class ItemSorter
 			k++;
 		}
 		
-		//Copies the remaining elements of the temporary arrays if necessary
+		// Copies the remaining elements of the temporary arrays if necessary
 		while(i < sizeL)
 		{
 			items[k] = arrayL[i];
@@ -75,19 +75,19 @@ public class ItemSorter
 		}
 	}
 	
-	//Function for sorting an array
+	// Function for sorting an array
 	public void sort(Item[] items, int l, int r)
 	{
 		if(l < r)
 		{
-			//Gets the middle
+			// Gets the middle
 			int m = l + ((r - l) / 2);
 			
-			//Sorts the left and right halves of the array
+			// Sorts the left and right halves of the array
 			sort(items, l, m);
 			sort(items, m + 1, r);
 			
-			//Merges the sorted halves
+			// Merges the sorted halves
 			merge(items, l, m, r);
 		}
 	}

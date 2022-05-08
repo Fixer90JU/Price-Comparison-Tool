@@ -1,12 +1,12 @@
-//Item
+// Item
 public class Item
 {
-	//Variables
+	// Variables
 	public String name;
 	public String price;
 	public String store;
 	
-	//Constructors
+	// Constructors
 	public Item()
 	{
 		name = "";
