@@ -2,9 +2,9 @@
 import java.util.Scanner;
 import java.io.File;
 import java.io.IOException;
-import jsoup.src.main.java.org.jsoup.Jsoup;
-import jsoup.src.main.java.org.jsoup.nodes.Document;
-import jsoup.src.main.java.org.jsoup.nodes.Element;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 // Price Comparison Tool
 public class PriceComparisonTool
